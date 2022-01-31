@@ -711,12 +711,12 @@ ZINIT[EXTENDED_GLOB]=""
     emulate -LR zsh
     setopt extendedglob typesetsilent warncreateglobal
 
-    [[ $1 = -q ]] && +zinit-message "{info2}Updating Zinit{…}{rst}"
+    [[ $1 = -q ]] && +zinit-message "{pre}[self-update]{msg2}{info2}Updating Zinit{…}{rst}"
 
-    local nl=$'\n' escape=$'\x1b['
+    local nl=$'\n' escape=$'\x1b[' current_branch=$(command git --work-tree=$ZINIT[BIN_DIR] branch --show-current 2>/dev/null)
     local -a lines
     (   builtin cd -q "$ZINIT[BIN_DIR]" && \
-        command git checkout main &>/dev/null && \
+        +zinit-message -n "{pre}[self-update]{msg2} fetching changes for {msg2}${current_branch}{obj}" && \
         command git fetch --quiet && \
             lines=( ${(f)"$(command git log --color --date=short --pretty=format:'%Cgreen%cd %h %Creset%s %Cred%d%Creset || %b' ..FETCH_HEAD)"} )
         if (( ${#lines} > 0 )); then
@@ -734,13 +734,13 @@ ZINIT[EXTENDED_GLOB]=""
             builtin print
         fi
         if [[ $1 != -q ]] {
-            command git pull --no-stat --ff-only origin main
+            command git pull --no-stat --ff-only origin ${current_branch}
         } else {
-            command git pull --no-stat --quiet --ff-only origin main
+            command git pull --no-stat --quiet --ff-only origin ${current_branch}
         }
     )
     if [[ $1 != -q ]] {
-        +zinit-message "Compiling Zinit (zcompile){…}"
+        +zinit-message "{pre}[self-update]{msg2} Compiling Zinit (zcompile){…}"
     }
     command rm -f $ZINIT[BIN_DIR]/*.zwc(DN)
     zcompile -U $ZINIT[BIN_DIR]/zinit.zsh
@@ -750,7 +750,7 @@ ZINIT[EXTENDED_GLOB]=""
     zcompile -U $ZINIT[BIN_DIR]/zinit-additional.zsh
     zcompile -U $ZINIT[BIN_DIR]/share/git-process-output.zsh
     # Load for the current session
-    [[ $1 != -q ]] && +zinit-message "Reloading Zinit for the current session{…}"
+    [[ $1 != -q ]] && +zinit-message "{pre}[self-update]{msg2} Reloading Zinit for the current session{…}"
     source $ZINIT[BIN_DIR]/zinit.zsh
     source $ZINIT[BIN_DIR]/zinit-side.zsh
     source $ZINIT[BIN_DIR]/zinit-install.zsh
