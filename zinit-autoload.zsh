@@ -714,7 +714,7 @@ ZINIT[EXTENDED_GLOB]=""
     [[ $1 = -q ]] && +zinit-message "{pre}[self-update]{msg2}{info2}Updating Zinit{…}{rst}"
 
     local nl=$'\n' escape=$'\x1b['
-    local current_branch=$(command git --work-tree="$ZINIT[BIN_DIR]" branch --show-current)
+    local current_branch=$(command pushd ZINIT[BIN_DIR] && git branch --show-current && popd)
     local -a lines
     (   builtin cd -q "$ZINIT[BIN_DIR]" && \
         +zinit-message -n "{pre}[self-update]{msg2} fetching changes for {msg2}$current_branch{cmd}" && \
