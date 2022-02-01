@@ -717,7 +717,7 @@ ZINIT[EXTENDED_GLOB]=""
     local current_branch=$(command git --work-tree=$ZINIT[BIN_DIR] branch --show-current)
     local -a lines
     (   builtin cd -q "$ZINIT[BIN_DIR]" && \
-        +zinit-message -n "{pre}[self-update]{msg2} fetching changes for {msg2}$current_branch{rst}" && \
+        +zinit-message -n "{pre}[self-update]{msg2} fetching changes for {msg2}$current_branch{cmd}" && \
         command git fetch --quiet && \
             lines=( ${(f)"$(command git log --color --date=short --pretty=format:'%Cgreen%cd %h %Creset%s %Cred%d%Creset || %b' ..FETCH_HEAD)"} )
         if (( ${#lines} > 0 )); then
