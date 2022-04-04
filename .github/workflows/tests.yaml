@@ -1,6 +1,13 @@
 name: Unit tests
 
-on: [push, pull_request, workflow_dispatch]
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
 env:
   TERM: xterm
@@ -14,13 +21,11 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v3
+
       - name: "install dependencies"
-        run: brew install subversion unzip zsh
+        run: brew install svn unzip zsh
 
-      - name: "change to z-shell"
-        run: exec zsh
-
-      - name: "${{ matrix.test }}: ${{ matrix.os }}"
+      - name: "${{ matrix.os }}"
         run: |
-          brew install vladdoster/zunit/zunit
-          zunit --tap --verbose
+          exec zsh
+          zunit --fail-fast --time-limit 60 --verbose
