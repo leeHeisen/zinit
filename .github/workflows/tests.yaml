@@ -23,9 +23,12 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: "install dependencies"
-        run: brew install svn unzip zsh
+        run: |
+          brew install svn unzip zsh
+
+      - name: "install zunit"
+        run: brew install vladdoster/zunit/zunit
 
       - name: "${{ matrix.os }}"
         run: |
-          exec zsh
           zunit --fail-fast --time-limit 60 --verbose
