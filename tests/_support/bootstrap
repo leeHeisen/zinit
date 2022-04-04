@@ -16,8 +16,8 @@ ZINIT[ZCOMPDUMP_PATH]=$ZINIT[HOME_DIR]/zcompdump    ZINIT[PLUGINS_DIR]=$ZINIT[HO
 ZI_REPO='zdharma-continuum'; GH_RAW_URL='https://raw.githubusercontent.com'
 info 'Downloading Zinit' \
   && command git clone \
-      --branch 'fix/gh-r-logic' \
-      https://github.com/vladdoster/zinit \
+      --branch 'refactor/zunit-tests' \
+      https://github.com/$ZI_REPO/zinit.git \
       $ZINIT[BIN_DIR] \
   || error 'Unable to download zinit' \
   && info 'Installing Zinit' \

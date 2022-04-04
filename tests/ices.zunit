@@ -20,17 +20,6 @@
   assert $state equals 0
 }
 
-# @test 'browsh' {
-#   run zinit sbin"**/browsh -> browsh" for @browsh-org/browsh
-#   assert $state equals 0
-#
-#   local browsh="$zpfx/bin/browsh"
-#   assert "$browsh" is_executable
-#
-#   $browsh --version
-#   assert $state equals 0
-# }
-
 @test 'checkmake' {
   run zinit sbin'checkmake* -> checkmake' for mrtazz/checkmake
   assert $state equals 0
@@ -53,16 +42,16 @@
   assert $state equals 0
 }
 
-@test 'docker-compose' {
-  run zinit sbin"**/docker-compose* -> docker-compose" for docker/compose
-  assert $state equals 0
-
-  local docker_compose="$ZPFX/bin/docker-compose"
-  assert "$docker_compose" is_executable
-
-  $docker_compose --version
-  assert $state equals 0
-}
+# @test 'docker-compose' {
+#   run zinit sbin"**/docker-compose* -> docker-compose" for docker/compose
+#   assert $state equals 0
+#
+#   local docker_compose="$ZPFX/bin/docker-compose"
+#   assert "$docker_compose" is_executable
+#
+#   $docker_compose --version
+#   assert $state equals 0
+# }
 
 @test 'dust' {
   run zinit sbin"**/dust" for @bootandy/dust
@@ -105,7 +94,7 @@
   assert "$fx" is_executable
 
   # use fx because fx has no flags/options (e.g., --version)
-  echo '{"count": 0}' | fx '{count: 1}'
+  echo '{"count": 0}' | $fx '{count: 1}'
   assert $state equals 0
 }
 
