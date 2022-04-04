@@ -1,5 +1,5 @@
-name: 📦 zinit installer
-on: [push, workflow_dispatch]
+name: zinit installer
+on: [pull_request, workflow_dispatch]
 
 jobs:
   shellcheck:

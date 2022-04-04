@@ -6,7 +6,6 @@ builtin source "${ZINIT[BIN_DIR]}/zinit-side.zsh" || {
     return 1
 }
 
-
 # FUNCTION: .zinit-jq-check [[[
 # Check if jq is available and outputs an error message with instructions if
 # that's not the case
@@ -696,6 +695,7 @@ builtin source "${ZINIT[BIN_DIR]}/zinit-side.zsh" || {
         elif type lftp 2>/dev/null 1>&2; then
             command lftp -c "cat $url" || return 1
         else
+            +zinit-message "{u-warn}DEBUG{b-warn}:{rst}{cmd}test output{rst})."
             .zinit-download-file-stdout "$url" "1" "$progress"
             return $?
         fi
@@ -1450,24 +1450,22 @@ builtin source "${ZINIT[BIN_DIR]}/zinit-side.zsh" || {
     }
 
     local -A matchstr
+      # aarch64 'a(arch|rm)64'
+      # arm64 'a(arch|rm)64'
     matchstr=(
-        i386    "((386|686|linux32|x86*(#e))~*x86_64*)"
-        i686    "((386|686|linux32|x86*(#e))~*x86_64*)"
-        x86_64  "(x86_64|amd64|intel|linux64)"
-        amd64   "(x86_64|amd64|intel|linux64)"
-        aarch64 "aarch64"
-        aarch64-2 "arm"
-        linux   "(linux|linux-gnu)"
-        darwin  "(darwin|mac|macos|osx|os-x)"
-        cygwin  "(windows|cygwin|[-_]win|win64|win32)"
-        windows "(windows|cygwin|[-_]win|win64|win32)"
-        msys "(windows|msys|cygwin|[-_]win|win64|win32)"
-        armv7l  "(arm7|armv7)"
-        armv7l-2 "arm7"
-        armv6l  "(arm6|armv6)"
-        armv6l-2 "arm"
-        armv5l  "(arm5|armv5)"
-        armv5l-2 "arm"
+      amd64 '(linux(_amd)?64|x86_64|intel|amd64)'
+      android '(apk|android)'
+      arm64 '(a(rm|arch)64)'
+      armv5 'armv?5'
+      armv6 'armv?6'
+      armv7 'armv?7'
+      cygwin '(cyg|-|_|)win(dows|32|64|))'
+      darwin '*((#s)|/)*(darwin([.-_]a[mr]d64|)|apple|mac(os|))*((#e)|/)*'
+      linux-gnu '*((#s)|/)*linux(([-_](musl|gnu))?|musl|gnu|)*((#e)|/)*'
+      linux-musl '*((#s)|/)*linux(([-_](musl))?|musl|)*((#e)|/)*'
+      msys    '(cyg|-|_|)win(dows|32|64|))'
+      windows '(cyg|-|_|)win(dows|32|64|))'
+      x86_64 "(((amd|x86_)64)~*(arm64|aarch64)*)"
     )
 
     local -a list init_list
@@ -1485,42 +1483,71 @@ builtin source "${ZINIT[BIN_DIR]}/zinit-side.zsh" || {
     for bpick ( "${bpicks[@]}" ) {
         list=( $init_list )
 
-        if [[ -n $bpick ]] {
-            list=( ${(M)list[@]:#(#i)*/$~bpick} )
-        }
+        list=( ${list[@]:#*(accoutrements|checksums.txt|MD5SUMS|SHA1SUMS|sha256sum(#e)|manifest(#e)|pkg(#e)|sha256(#e)|AppImage(#e))*} )
 
-        if (( $#list > 1 )) {
-            list2=( ${(M)list[@]:#(#i)*${~matchstr[$MACHTYPE]:-${MACHTYPE#(#i)(i|amd)}}*} )
+        # filter .deb packages if dpkg-deb present
+        if (( $#list < 1 && ${+commands[dpkg-deb]} == 1 )) {
+            list2=( ${(M)list[@]:#*\.deb*} )
+            (( $#list2 > 0 )) && list=( ${list2[@]} )
+        } else {
+            list2=( ${list[@]:#*\.deb*} )
             (( $#list2 > 0 )) && list=( ${list2[@]} )
         }
 
-        if (( ${#list} > 1 && ${#matchstr[${MACHTYPE}-2]} )) {
-            list2=( ${(M)list[@]:#(#i)*${~matchstr[${MACHTYPE}-2]:-${MACHTYPE#(#i)(i|amd)}}*} )
+        # filter .rpm packages if redhat package manager present
+        if (( $#list < 1 && ${+commands[rpm]} == 1 )) {
+            list2=( ${(M)list[@]:#*.rpm*} )
+            (( $#list2 > 0 )) && list=( ${list2[@]} )
+        } else {
+            list2=( ${list[@]:#*\.rpm*} )
+            (( $#list2 > 0 )) && list=( ${list2[@]} )
+        }
+
+        # filter .apk packages if anbox present
+        if (( $#list > 1 && ${+commands[anbox]} == 1 )) {
+            +zinit-message "{pre}gh-r:{info2} filtering android artifacts with ${~matchstr[android]}{rst}"
+            list2=( ${(M)list[@]:#(#i)*${~matchstr[android]}*} )
+        } else {
+            list2=( ${list[@]:#(#i)*${~matchstr[android]}*} )
+            +zinit-message "{pre}gh-r:{info2} removed android artifacts with ${~matchstr[android]}{rst}"
+        }
+        print -C 1 ${(pj:\n:)${list[@]:t}}
+        (( $#list2 > 0 )) && list=( ${list2[@]} )
+
+        # filter urls by os (e.g., darwin, linux, windows)
+        if (( $#list > 1 )) {
+            +zinit-message "{pre}gh-r:{info2} filtering for \$OSTYPE: ${OSTYPE} with ${~matchstr[${OSTYPE//[0-9.]/}]}{rst}"
+            list2=( ${(M)list[@]:#(#i)*${~matchstr[${OSTYPE//[0-9.]/}]}*} )
+            print -C 1 ${(pj:\n:)${list[@]:t}}
             (( $#list2 > 0 )) && list=( ${list2[@]} )
         }
 
         if (( $#list > 1 )) {
-            list2=( ${(M)list[@]:#(#i)*${~matchstr[$CPUTYPE]:-${CPUTYPE#(#i)(i|amd)}}*} )
+            +zinit-message "{pre}gh-r:{info2} filtering by \$MACHTYPE: ${MACHTYPE} with ${~matchstr[${MACHTYPE}]}{rst}"
+            list2=( ${(M)list[@]:#(#i)*${~matchstr[${MACHTYPE}]}*} )
+            print -C 1 ${(pj:\n:)${list[@]:t}}
             (( $#list2 > 0 )) && list=( ${list2[@]} )
         }
 
         if (( $#list > 1 )) {
-            list2=( ${(M)list[@]:#(#i)*${~matchstr[${${OSTYPE%(#i)-(gnu|musl)}%%(-|)[0-9.]##}]:-${${OSTYPE%(#i)-(gnu|musl)}%%(-|)[0-9.]##}}*} )
+            +zinit-message "{pre}gh-r:{info2} filtering by \$CPUTYPE: ${CPUTYPE} with ${~matchstr[${CPUTYPE}]}{rst}"
+            list2=( ${(M)list[@]:#(#i)*${~matchstr[${CPUTYPE}]}*} )
+            print -C 1 ${(pj:\n:)${list[@]:t}}
+            (( $#list2 > 0 )) && list=( ${list2[@]} )
+        }
+
+        # filter urls by os (e.g., darwin, linux, windows)
+        if (( $#list > 1 )) {
+            +zinit-message "{pre}gh-r:{info2} filtering for \$OSTYPE: ${OSTYPE} with ${~matchstr[${OSTYPE//[0-9.]/}]}{rst}"
+            list2=( ${(M)list[@]:#(#i)*${%%matchstr[${OSTYPE//[0-9.]/}]}*} )
+            print -C 1 ${(pj:\n:)${list[@]:t}}
             (( $#list2 > 0 )) && list=( ${list2[@]} )
         }
 
         if (( $#list > 1 )) {
+            +zinit-message "{pre}gh-r filter:{info2} sorting by latest version number{rst}"
             list2=( ${list[@]:#(#i)*.(sha[[:digit:]]#|asc)} )
-            (( $#list2 > 0 )) && list=( ${list2[@]} )
-        }
-
-        if (( $#list > 1 && $+commands[dpkg-deb] )) {
-            list2=( ${list[@]:#*.deb} )
-            (( $#list2 > 0 )) && list=( ${list2[@]} )
-        }
-
-        if (( $#list > 1 && $+commands[rpm] )) {
-            list2=( ${list[@]:#*.rpm} )
+            print -C 1 ${(pj:\n:)${list[@]:t}}
             (( $#list2 > 0 )) && list=( ${list2[@]} )
         }
 
@@ -2388,4 +2415,3 @@ zimv() {
     }
 }
 # ]]]
-# vim:ft=zsh:sw=4:sts=4:et:foldmarker=[[[,]]]:foldmethod=marker

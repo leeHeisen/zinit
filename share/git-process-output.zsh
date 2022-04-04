@@ -8,8 +8,11 @@ setopt typesetsilent extendedglob warncreateglobal
 if (( COLS < 10 )) {
     COLS=40
 }
+# Calculate the screen width
+# Clear the line and move the cursor to the start
+
 # Credit to molovo/revolver for the ideas
-progress_frames='0.1 ⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏'
+progress_frames='0.08 ⠋ ⠙ ⠚ ⠒ ⠂ ⠂ ⠒ ⠲ ⠴ ⠦ ⠖ ⠒ ⠐ ⠐ ⠒ ⠓ ⠋'
 integer -g cur_frame=1
 typeset -F SECONDS=0 last_time=0
 
@@ -87,7 +90,7 @@ print_my_line_compress() {
 }
 
 integer have_1_counting=0 have_2_total=0 have_3_receiving=0 have_4_deltas=0 have_5_compress=0
-integer counting_1=0 total_2=0 total_packed_2=0 receiving_3=0 deltas_4=0 compress_5=0
+integer compress_5=0 counting_1=0 deltas_4=0 receiving_3=0 total_2=0 total_packed_2=0
 integer loop_count=0
 
 IFS=''
@@ -96,10 +99,8 @@ IFS=''
 
 if [[ -n $TERM ]] {
 
-{ command perl -pe 'BEGIN { $|++; $/ = \1 }; tr/\r/\n/' || \
-    gstdbuf -o0 gtr '\r' '\n' || \
-    cat } |& \
-while read -r line; do
+{ command perl -pe 'BEGIN { $|++; $/ = \1 }; tr/\r/\n/' || gstdbuf -o0 gtr '\r' '\n' || cat } |& \
+  while read -r line; do
     (( ++ loop_count ))
     if [[ "$line" = "Cloning into"* ]]; then
         print $line
@@ -108,7 +109,7 @@ while read -r line; do
         print $line
         continue
     elif [[ "$line" = remote:*~*(Counting|Total|Compressing|Enumerating)* || "$line" = fatal:* ]]; then
-        print $line
+        print; print $line
         continue
     fi
     if [[ "$line" = (#b)"remote: Counting objects:"[\ ]#([0-9]##)(*) ]]; then

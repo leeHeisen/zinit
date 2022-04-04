@@ -34,8 +34,7 @@ doc: zinit.zsh zinit-side.zsh zinit-install.zsh zinit-autoload.zsh
 	cd doc; zsd -v --scomm --cignore '(\#*FUNCTION:*{{{*|\#[[:space:]]#}}}*)' ../zinit.zsh ../zinit-side.zsh ../zinit-install.zsh ../zinit-autoload.zsh
 
 clean:
-	rm -f zinit.zsh.zwc zinit-side.zsh.zwc zinit-install.zsh.zwc zinit-autoload.zsh.zwc
-	rm -rf doc/zsdoc/data
+	rm -rf *.zsh.zwc doc/zsdoc/data
 
 .PHONY: all test clean doc
 # vim:noet:sts=8:ts=8
