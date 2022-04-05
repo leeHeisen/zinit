@@ -31,4 +31,4 @@ jobs:
 
       - name: "${{ matrix.os }}"
         run: |
-          zunit --fail-fast --time-limit 60 --verbose
+          zunit
