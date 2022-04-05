@@ -198,6 +198,28 @@
   assert $state equals 0
 }
 
+@test 'lsd' {
+  run zinit sbin'**/lsd -> lsd' for Peltoche/lsd
+  assert $state equals 0
+
+  local lsd="$ZPFX/bin/lsd"
+  assert "$lsd" is_executable
+
+  $lsd --version
+  assert $state equals 0
+}
+
+@test 'micro' {
+  run zinit sbin'**/micro -> micro' for zyedidia/micro
+  assert $state equals 0
+
+  local micro="$ZPFX/bin/micro"
+  assert "$micro" is_executable
+
+  $micro --version
+  assert $state equals 0
+}
+
 @test 'mocword' {
   run zinit sbin'**/mocword* -> mocword' for @high-moctane/mocword
   assert $state equals 0
