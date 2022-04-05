@@ -1455,7 +1455,7 @@ builtin source "${ZINIT[BIN_DIR]}/zinit-side.zsh" || {
     matchstr=(
       amd64 '(linux(_amd)?64|x86_64|intel|amd64)'
       android '(apk|android)'
-      arm64 '(a(rm|arch)64)'
+      arm64 '(a(rm|arch)64)^*(amd|x86_)64*'
       armv5 'armv?5'
       armv6 'armv?6'
       armv7 'armv?7'
@@ -1465,7 +1465,7 @@ builtin source "${ZINIT[BIN_DIR]}/zinit-side.zsh" || {
       linux-musl '*((#s)|/)*linux(([-_](musl))?|musl|)*((#e)|/)*'
       msys    '(cyg|-|_|)win(dows|32|64|))'
       windows '(cyg|-|_|)win(dows|32|64|))'
-      x86_64 "(((amd|x86_)64)~*(arm64|aarch64)*)"
+      x86_64 "(amd|x86_)64^*(arm64|aarch64)*"
     )
 
     local -a list init_list
