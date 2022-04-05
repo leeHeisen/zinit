@@ -1460,7 +1460,7 @@ builtin source "${ZINIT[BIN_DIR]}/zinit-side.zsh" || {
       armv6 'armv?6'
       armv7 'armv?7'
       cygwin '(cyg|-|_|)win(dows|32|64|))'
-      darwin '*((#s)|/)*(darwin([.-_]a[mr]d64|)|apple|mac(os|))*((#e)|/)*'
+      darwin '*((#s)|/)*(darwin([.-_]a[mr]d64|)|apple|mac(os)?|osx)*((#e)|/)*'
       linux-gnu '*((#s)|/)*linux(([-_](musl|gnu))?|musl|gnu|)*((#e)|/)*'
       linux-musl '*((#s)|/)*linux(([-_](musl))?|musl|)*((#e)|/)*'
       msys    '(cyg|-|_|)win(dows|32|64|))'
