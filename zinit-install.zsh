@@ -1450,12 +1450,9 @@ builtin source "${ZINIT[BIN_DIR]}/zinit-side.zsh" || {
     }
 
     local -A matchstr
-      # aarch64 'a(arch|rm)64'
-      # arm64 'a(arch|rm)64'
     matchstr=(
       amd64 '(linux(_amd)?64|x86_64|intel|amd64)'
       android '(apk|android)'
-      arm64 '(a(rm|arch)64)^*(amd|x86_)64*'
       armv5 'armv?5'
       armv6 'armv?6'
       armv7 'armv?7'
@@ -1465,7 +1462,7 @@ builtin source "${ZINIT[BIN_DIR]}/zinit-side.zsh" || {
       linux-musl '*((#s)|/)*linux(([-_](musl))?|musl|)*((#e)|/)*'
       msys    '(cyg|-|_|)win(dows|32|64|))'
       windows '(cyg|-|_|)win(dows|32|64|))'
-      x86_64 "((amd|x86_)64)^*(arm64|aarch64)*"
+      arm64 "aarch64"
     )
       # "((32|x86*(#e))~*x86_64*)"
 
@@ -1528,7 +1525,7 @@ builtin source "${ZINIT[BIN_DIR]}/zinit-side.zsh" || {
 
         if (( $#list > 1 )) {
             +zinit-message "{pre}gh-r:{info2} filtering by \$MACHTYPE: ${MACHTYPE} with ${~matchstr[${MACHTYPE}]}{rst}"
-            list2=( ${(M)list[@]:#(#i)*${~matchstr[${MACHTYPE}]}*} )
+            list2=( ${(m)list[@]:#(#i)*${~matchstr[${MACHTYPE}]}*} )
             print -C 1 ${(pj:\n:)${list[@]:t}}
             (( $#list2 > 0 )) && list=( ${list2[@]} )
         }
@@ -1543,7 +1540,7 @@ builtin source "${ZINIT[BIN_DIR]}/zinit-side.zsh" || {
         # filter urls by os (e.g., darwin, linux, windows)
         if (( $#list > 1 )) {
             +zinit-message "{pre}gh-r:{info2} filtering for \$OSTYPE: ${OSTYPE} with ${~matchstr[${OSTYPE//[0-9.]/}]}{rst}"
-            list2=( ${(M)list[@]:#(#i)*${%%matchstr[${OSTYPE//[0-9.]/}]}*} )
+            list2=( ${(M)list[@]:#(#i)*${~matchstr[${OSTYPE//[0-9.]/}]}*} )
             print -C 1 ${(pj:\n:)${list[@]:t}}
             (( $#list2 > 0 )) && list=( ${list2[@]} )
         }
