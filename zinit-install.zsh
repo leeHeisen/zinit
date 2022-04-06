@@ -1465,8 +1465,9 @@ builtin source "${ZINIT[BIN_DIR]}/zinit-side.zsh" || {
       linux-musl '*((#s)|/)*linux(([-_](musl))?|musl|)*((#e)|/)*'
       msys    '(cyg|-|_|)win(dows|32|64|))'
       windows '(cyg|-|_|)win(dows|32|64|))'
-      x86_64 "(amd|x86_)64^*(arm64|aarch64)*"
+      x86_64 "((amd|x86_)64)^*(arm64|aarch64)*"
     )
+      # "((32|x86*(#e))~*x86_64*)"
 
     local -a list init_list
 
@@ -1482,6 +1483,10 @@ builtin source "${ZINIT[BIN_DIR]}/zinit-side.zsh" || {
     reply=()
     for bpick ( "${bpicks[@]}" ) {
         list=( $init_list )
+
+        if [[ -n $bpick ]] {
+            list=( ${(M)list[@]:#(#i)*/$~bpick} )
+        }
 
         list=( ${list[@]:#*(accoutrements|checksums.txt|MD5SUMS|SHA1SUMS|sha256sum(#e)|manifest(#e)|pkg(#e)|sha256(#e)|AppImage(#e))*} )
 
@@ -1511,7 +1516,6 @@ builtin source "${ZINIT[BIN_DIR]}/zinit-side.zsh" || {
             list2=( ${list[@]:#(#i)*${~matchstr[android]}*} )
             +zinit-message "{pre}gh-r:{info2} removed android artifacts with ${~matchstr[android]}{rst}"
         }
-        print -C 1 ${(pj:\n:)${list[@]:t}}
         (( $#list2 > 0 )) && list=( ${list2[@]} )
 
         # filter urls by os (e.g., darwin, linux, windows)
