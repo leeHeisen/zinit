@@ -1451,7 +1451,7 @@ builtin source "${ZINIT[BIN_DIR]}/zinit-side.zsh" || {
 
     local -A matchstr
     matchstr=(
-      amd64 '(linux(_amd)?64|x86_64|intel|amd64)'
+      amd64 '(linux(_amd)?|x86_64|intel|amd64)'
       android '(apk|android)'
       armv5 'armv?5'
       armv6 'armv?6'
@@ -1525,7 +1525,7 @@ builtin source "${ZINIT[BIN_DIR]}/zinit-side.zsh" || {
 
         if (( $#list > 1 )) {
             +zinit-message "{pre}gh-r:{info2} filtering by \$MACHTYPE: ${MACHTYPE} with ${~matchstr[${MACHTYPE}]}{rst}"
-            list2=( ${(m)list[@]:#(#i)*${~matchstr[${MACHTYPE}]}*} )
+            list2=( ${(M)list[@]:#(#i)*${~matchstr[${MACHTYPE}]}*} )
             print -C 1 ${(pj:\n:)${list[@]:t}}
             (( $#list2 > 0 )) && list=( ${list2[@]} )
         }

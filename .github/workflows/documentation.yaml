@@ -1,5 +1,13 @@
 name: Documentation
-on: [push, pull_request, workflow_dispatch]
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
   zshelldoc:
@@ -12,8 +20,7 @@ jobs:
           bundler-cache: true
 
       - name: Install asciidoctor-pdf
-        run: |
-          gem install asciidoctor-pdf
+        run: gem install asciidoctor-pdf
 
       - name: Check out repository
         uses: actions/checkout@v3
@@ -24,8 +31,7 @@ jobs:
           sudo chown -R "$(id -u):$(id -g)" .
 
       - name: Generate PDF
-        run: |
-          make -C doc/zsdoc pdf
+        run: make -C doc/zsdoc pdf
 
       - name: Tar doc/
         run: |
@@ -35,8 +41,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: docs
-          path: |
-            /tmp/doc.tar.gz
+          path: /tmp/doc.tar.gz
 
       - name: Check if the zsd docs need to be updated
         run: |

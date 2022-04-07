@@ -85,8 +85,7 @@
   assert $state equals 0
   local git_mkver="$ZPFX/bin/git-mkver"
   assert "$git_mkver" is_executable
-  # use git-mkver because --version exits with 130...?
-  $git_mkver info
+  $git_mkver info # use git-mkver because --version exits with 130...?
   assert $state equals 0
 }
 @test 'git-sizer' {
@@ -227,15 +226,12 @@
 }
 @test 'volta' {
   # @vladdoster @ 04/06/2022 : Will be un-commented once
-  [volta-cli/volta/pull/1194](https://github.com/volta-cli/volta/pull/1194)
-  is merged.
-
+  # [volta-cli/volta/pull/1194](https://github.com/volta-cli/volta/pull/1194)
+  # is merged.
   run zinit sbin'**/volta' for volta-cli/volta
   assert $state equals 0
-
   local volta="$ZPFX/bin/volta"
   assert "$volta" is_executable
-
   $volta --version
   assert $state equals 0
 }

@@ -1,5 +1,12 @@
 name: Unit tests
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  TERM: xterm
+
 on:
   pull_request:
     branches:
@@ -9,26 +16,24 @@ on:
       - main
   workflow_dispatch:
 
-env:
-  TERM: xterm
-
 jobs:
+
   tests:
+
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: ['macos-latest', 'ubuntu-latest']
       fail-fast: false
+
     steps:
       - uses: actions/checkout@v3
 
       - name: "install dependencies"
-        run: |
-          brew install svn unzip zsh
+        run: brew install svn unzip zsh
 
       - name: "install zunit"
         run: brew install vladdoster/zunit/zunit
 
       - name: "${{ matrix.os }}"
-        run: |
-          zunit
+        run: zunit
