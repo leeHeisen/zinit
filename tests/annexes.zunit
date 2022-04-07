@@ -1,8 +1,7 @@
 #!/usr/bin/env zunit
 
-@test 'bin-gem-node installation' {
+@test 'zinit-annex-bin-gem-node' {
   run zinit load zdharma-continuum/zinit-annex-bin-gem-node
-
   assert $state equals 0
 
   local artifact="$ZINIT[PLUGINS_DIR]/zdharma-continuum---zinit-annex-bin-gem-node/z-a-bin-gem-node.plugin.zsh"
@@ -10,7 +9,7 @@
   assert "$artifact" is_readable
 }
 
-@test 'readurl installation' {
+@test 'zinit-annex-readurl ' {
   run zinit light zdharma-continuum/zinit-annex-readurl
 
   assert $state equals 0

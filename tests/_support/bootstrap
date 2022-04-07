@@ -1,13 +1,12 @@
 #!/usr/bin/env zsh
-#=== HELPER METHODS ===================================
+
+# Log functions [[[
 function error() { print -P "%F{160}[ERROR] ---%f%b $1" >&2 && exit 1; }
 function info() { print -P "%F{34}[INFO] ---%f%b $1"; }
-#=== ZINIT ============================================
-# GIT_REPO=$(git rev-parse --show-toplevel)/tests/_support/zinit
+# ]]]
+
+# Install Zinit [[[
 GIT_REPO=$(mktemp -d)/zinit
-if [[ -d $GIT_REPO ]]; then
-  rm -rf $GIT_REPO
-fi
 typeset -gAH ZINIT;
 ZINIT[HOME_DIR]=$GIT_REPO  ZPFX=$ZINIT[HOME_DIR]/polaris
 ZINIT[BIN_DIR]=$ZINIT[HOME_DIR]/zinit.git ZINIT[OPTIMIZE_OUT_DISK_ACCESSES]=1
@@ -29,22 +28,8 @@ source $ZINIT[BIN_DIR]/zinit.zsh \
   && autoload -Uz _zinit \
   && (( ${+_comps} )) \
   && _comps[zinit]=_zinit
-
-zi for \
-    as"null" \
-    atclone"./install -e no -d ${HOME}/.local" \
-    atinit"export PATH=${HOME}/.local/bin:${PATH}" \
-    atpull"%atclone" \
-    depth"1" lucid nocompile nocompletions \
-  @romkatv/zsh-bin \
-    light-mode \
-  zdharma-continuum/zinit-annex-{'bin-gem-node','default-ice','binary-symlink'}
-
-zi as'program' for \
-    pick"revolver" \
-    mv'revolver.zsh-completion -> _revolver' \
-  molovo/revolver \
-    atclone'./build.zsh' \
-    mv'zunit.zsh-completion -> _zunit' \
-    pick"zunit" \
-  zunit-zsh/zunit
+# ]]]
+#
+# Install Annexes [[[
+zinit light-mode for $ZI_REPO/zinit-annex-{'bin-gem-node','binary-symlink','default-ice','patch-dl'}
+# vim:ft=zsh:sw=4:sts=4:et:foldmarker=[[[,]]]:foldmethod=marker

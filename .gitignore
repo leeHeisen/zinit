@@ -19,4 +19,5 @@ tags
 test/
 txt/
 zmodules/
-tests/_support/zinit
+tests/_output/
+tests/_support/zinit/

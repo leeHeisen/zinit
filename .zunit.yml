@@ -3,6 +3,6 @@ directories:
   tests: tests
   output: tests/_output
   support: tests/_support
-fail_fast: true
+fail_fast: false
 tap: false
-time_limit: 180
+verbose: true
