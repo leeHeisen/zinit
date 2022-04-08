@@ -200,6 +200,14 @@
   $rg --version
   assert $state equals 0
 }
+@test 'shellcheck' {
+  run zinit sbin'**/sh* -> shellcheck' for koalaman/shellcheck
+  assert $state equals 0
+  local shellcheck="$ZPFX/bin/shellcheck"
+  assert "$shellcheck" is_executable
+  $shellcheck --version
+  assert $state equals 0
+}
 @test 'shfmt' {
   run zinit sbin'**/sh* -> shfmt' for @mvdan/sh
   assert $state equals 0
